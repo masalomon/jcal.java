@@ -1,0 +1,59 @@
+In a day, there are 86,400,000 milliseconds
+In a year, there are 354 days (average),
+but a month is 29 days and  12+793/1080 hours
+There are 3600 seconds in an hour, but only 1080 cheleks.
+This gives 3 1/3 seconds per chelek - 3333 1/3 milliseconds
+
+Cheleks per day: 1080 * 24 = 25,920 ( * 3.3333333333333333 = 86400)
+	*** need 16 decimal places for 1/3
+
+29 * (24 * 1080) + (12 * 1080) + 793
+-- 765433 Cheleks per month
+-- 235 months per cycle
+-- 179,876,755 cheleks per cycle (6939+days)
+
+-- 1970 CE corresponds to 5730 AC (though it started 4 months later)
+-- From 1 AC to 5730 AC (1969/1970 CE), there were 301+ cycles
+-- From 1 AC to 5720 AC (1960 CE), there were 301 cycles.
+-- Rosh Hashana 5720 AC (September? 1959 CE) was the first year of cycle 302
+-- (Odd cycles: 1, 3, 301, 303 - begin in odd years: 1, 37, 5701, 5736)
+-- (Even cycles: 2, 4, 302, 304 - begin in even years: 20, 58, 5720, 5758)
+
+Cycle	Year	AC		CE-CE(2)	Type	Rosh	Jan1
+-------------------------------------------------------------
+302		1		5720	1959-1960	M		
+302		2		5721	1960-1961	K		
+302		3*		5722	1961-1962	C		
+302		4		5723	1962-1963	M			
+302		5		5724	1963-1964	K		
+302		6*		5725	1964-1965	M		
+302		7		5726	1965-1966	C		
+302		8*		5727	1966-1967	M		
+302		9		5728	1967-1968	K		
+302		10		5729	1968-1969	M		
+302		11*		5730	1969-1970	C		
+302		12		5731	1970-1971	K		
+302		13		5732	1971-1972	M		
+302		14*		5733	1972-1973	C		
+302		15		5734	1973-1974	M		
+302		16		5735	1974-1975	K		
+302		17*		5736	1975-1976	M		
+302		18		5737	1976-1977	C			
+302		19*		5738	1977-1978	K		
+
+303		1		5739	1978-1997	M		
+
+304		1  		5758	1997-1998	K		
+304		3*		5760	1999-2000	M		
+304		6*		5763	2002-2003	M		
+304		8*		5765	2004-2005	C		
+304		11*		5768	2007-2008	C		
+304		14*		5771	2010-2011	M		
+304*	17*		5774	2013-2014	M		Sep 5	29 Teveis
+304		19*		5776	2015-2016	M
+305		19*		5777	2016-2017	C	
+
+Type is : (C | K | M )
+
+Jan 1, 2014 = 29 Teveis, 5774
+Sept 5, 2015 = 1 Tishrei, 5774
