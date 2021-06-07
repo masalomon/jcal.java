@@ -1,3 +1,6 @@
+import mazs.jcal.HYear;
+import mazs.jcal.HMonth;
+
 /** This class contains the command line interface to the Hebrew calendar
  * program.  It is named in lowercase (contrary to convention) for ease of use.
  * @author Menachem A. Salomon

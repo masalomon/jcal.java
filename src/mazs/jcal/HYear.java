@@ -1,3 +1,5 @@
+package mazs.jcal;
+
 /** An {@code HYear} object holds information about a year in the Jewish
  * calendar.  All calculations are as described in the Rambam's Ya"d Hachazaka
  * (Mishne Torah) Sefer III - Zmanim, Hilchos Kiddush Hachodesh, Chapters 6 to

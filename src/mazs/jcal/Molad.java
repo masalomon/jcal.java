@@ -1,3 +1,5 @@
+package mazs.jcal;
+
 /**  A {@code Molad} object represents an exact moment in time in the system
  * traditionally used by Halacha when calculating the New Moon, or <i>molad</i>
  * (birth).  In this system, a week is divided into 7 days, counted from
@@ -21,7 +23,7 @@
  * @see "Rambam - Ya"d Hachazaka" (Mishne Torah), Sefer III - Zmanim, Hilchos
  * Kiddush Hachodesh, Chapters 6 to 8
  */
-class Molad {
+public class Molad {
 	/** Supply a stand-alone version, for testing */
 	public static void main(String argv[]) {
 		Molad nosar = new Molad(1, 12, 793);
