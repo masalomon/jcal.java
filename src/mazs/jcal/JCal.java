@@ -1,3 +1,5 @@
+package mazs.jcal;
+
 import mazs.jcal.HYear;
 import mazs.jcal.HMonth;
 
@@ -9,7 +11,7 @@ import mazs.jcal.HMonth;
  * @see HMonth
  * @see CalendarFrame
  */
-public class jcal {
+public class JCal {
 
 	/** Run from the command line.
 	 * Synopsis: java jcal [options] <year> <month>
