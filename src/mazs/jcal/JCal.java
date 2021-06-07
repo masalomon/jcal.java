@@ -1,8 +1,5 @@
 package mazs.jcal;
 
-import mazs.jcal.HYear;
-import mazs.jcal.HMonth;
-
 /** This class contains the command line interface to the Hebrew calendar
  * program.  It is named in lowercase (contrary to convention) for ease of use.
  * @author Menachem A. Salomon
@@ -39,6 +36,6 @@ public class JCal {
 		month.display(true);
 	}
 
-	private static String version_str = "version 0.2";
+	private static String version_str = "version 0.3";
 	private static String usage_str = "Usage: java jcal year month";
 }
