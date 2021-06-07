@@ -2,8 +2,8 @@
  * program.  It is named in lowercase (contrary to convention) for ease of use.
  * @author Menachem A. Salomon
  * @see Molad
- * @see Hyear
- * @see Hmonth
+ * @see HYear
+ * @see HMonth
  * @see CalendarFrame
  */
 public class jcal {
@@ -20,12 +20,12 @@ public class jcal {
 
 		// acquire year value:
 		int yr = Integer.parseInt(args[0]);
-		Hyear year = new Hyear(yr);
+		HYear year = new HYear(yr);
 
 		// acquire month value
 		// Future Versions: read month as word, get leap months right
 		int mo = Integer.parseInt(args[1]);
-		Hmonth month = new Hmonth(year, mo);
+		HMonth month = new HMonth(year, mo);
 
 		// Do output:
 		System.out.println("MS's Jewish Calendar, " + version_str);
