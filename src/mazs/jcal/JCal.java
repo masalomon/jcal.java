@@ -4,8 +4,8 @@ package mazs.jcal;
  * program.  It is named in lowercase (contrary to convention) for ease of use.
  * @author Menachem A. Salomon
  * @see Molad
- * @see HYear
- * @see HMonth
+ * @see HebrewYear
+ * @see HebrewMonth
  * @see CalendarFrame
  */
 public class JCal {
@@ -22,12 +22,12 @@ public class JCal {
 
 		// acquire year value:
 		int yr = Integer.parseInt(args[0]);
-		HYear year = new HYear(yr);
+		HebrewYear year = new HebrewYear(yr);
 
 		// acquire month value
 		// Future Versions: read month as word, get leap months right
 		int mo = Integer.parseInt(args[1]);
-		HMonth month = new HMonth(year, mo);
+		HebrewMonth month = new HebrewMonth(year, mo);
 
 		// Do output:
 		System.out.println("MS's Jewish Calendar, " + version_str);

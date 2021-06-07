@@ -1,6 +1,6 @@
 package mazs.jcal;
 
-/** An {@code HMonth} object represents a month in the Jewish calendar.  All
+/** A {@code HebrewMonth} object represents a month in the Jewish calendar.  All
  * calculations are as described in the Rambam's Ya"d Hachazaka (Mishne Torah)
  * Sefer III - Zmanim, Hilchos Kiddush Hachodesh, Chapters 6 to 8 (referenced
  * herein an HKH).
@@ -21,9 +21,9 @@ package mazs.jcal;
  * "sequentialized" (see {@link #sequentialize()}).
  * @author Menachem A. Salomon
  * @see Molad
- * @see HYear
+ * @see HebrewYear
  */
-public class HMonth {
+public class HebrewMonth {
 	/** The number of the month - an integer between TISHREI and ELUL. For
 	 *	a leap year, Adar Rishon is 6, Adar Sheini is 13. This means we must
 	 *	play around some to keep things straight. */
@@ -44,33 +44,33 @@ public class HMonth {
 	/** A valid month length.  A month that is {@code CHASER} is 29 days long,
 	 * and a month that is {@code MALEI} is 30. */
 	public static final int CHASER = 29, MALEI = 30;
-	/** An HYear object, for the year number, type, and start. */
-	private HYear year;
+	/** An HebrewYear object, for the year number, type, and start. */
+	private HebrewYear year;
 	/** The name of the month */
 	String name;
 
 
 	/* Constructors: no-arg or year and month. */
 	/** Default constructor.  Initialize to Tishrei of the current year (see
-	 * {@link HYear#getThisYear()}). */
-	public HMonth()
+	 * {@link HebrewYear#getThisYear()}). */
+	public HebrewMonth()
 	{
-		this(new HYear(), 1);
+		this(new HebrewYear(), 1);
 	}
 
-	/** Construct an {@code HMonth} with a specific year and month.
+	/** Construct a {@code HebrewMonth} with a specific year and month.
 	 * @param yr the number of the year, counting from Creation.
 	 * @param mo the value of the current month; should be one of the constant
 	 * month names.  It is validated as by {@link #setMonth(int). */
-	public HMonth(int yr, int mo)
+	public HebrewMonth(int yr, int mo)
 	{
-		this(new HYear(yr), mo);
+		this(new HebrewYear(yr), mo);
 	}
 
-	/** Construct an {@code HMonth} object using a pre-existing {@code HYear}
+	/** Construct a {@code HebrewMonth} object using a pre-existing {@code HebrewYear}
 	 * object and a specific month.  The month should be one of the constant
 	 * month names.  It is validated as by {@link #setMonth(int)}. */
-	public HMonth(HYear yr, int mo)
+	public HebrewMonth(HebrewYear yr, int mo)
 	{
 		year = yr;
 		setMonth(mo);
@@ -86,7 +86,7 @@ public class HMonth {
 	 * range (1 - 12, or 1 - 13 for leap years). */
 	public void setMonth(int mo)
 	{
-		if (year == null) year = new HYear();
+		if (year == null) year = new HebrewYear();
 		if (mo >= TISHREI && mo <= ELUL || year.isLeap() && mo == ADAR_II)
 			month = mo;
 		else month = TISHREI;
@@ -176,8 +176,8 @@ public class HMonth {
 		// For extra month: Adar I is 30 days (Adar II gets advanced, too)
 		if (year.isLeap() && month >= NISSAN) dy += 2;
 		// Adjust for year type: Cheshvan is 30 or Kisleiv is 29
-		if (year.getYearType() == HYear.SHALEM && month > CHESHVAN) dy++;
-		else if (year.getYearType() == HYear.CHASER && month > KISLEIV) dy--;
+		if (year.getYearType() == HebrewYear.SHALEM && month > CHESHVAN) dy++;
+		else if (year.getYearType() == HebrewYear.CHASER && month > KISLEIV) dy--;
 
 		roshChodesh = dy % Molad.DAYS;
 	}
@@ -195,9 +195,9 @@ public class HMonth {
 			if (month == ADAR_I) length = MALEI;
 			else if (month == ADAR_II) length = CHASER;
 		}
-		if (month == CHESHVAN && year.getYearType() == HYear.SHALEM)
+		if (month == CHESHVAN && year.getYearType() == HebrewYear.SHALEM)
 			length = MALEI;
-		if (month == KISLEIV && year.getYearType() == HYear.CHASER)
+		if (month == KISLEIV && year.getYearType() == HebrewYear.CHASER)
 			length = CHASER;
 	}
 

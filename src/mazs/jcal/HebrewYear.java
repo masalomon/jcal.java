@@ -1,13 +1,13 @@
 package mazs.jcal;
 
-/** An {@code HYear} object holds information about a year in the Jewish
+/** A {@code HebrewYear} object holds information about a year in the Jewish
  * calendar.  All calculations are as described in the Rambam's Ya"d Hachazaka
  * (Mishne Torah) Sefer III - Zmanim, Hilchos Kiddush Hachodesh, Chapters 6 to
  * 8 (referenced herein an HKH). 
  * @author Menachem A. Salomon
  * @see Molad
  */
-public class HYear {
+public class HebrewYear {
 	/** The year number. Constrained to be between 1 and 6000 (inclusive). */
 	private int year;
 	/** The molad Tishrei of that year. */
@@ -26,17 +26,17 @@ public class HYear {
 
 
 	/* Constructors: no-arg, or year number supplied */
-	/** Default constructor.  Will attempt to create a new {@code HYear} object
+	/** Default constructor.  Will attempt to create a new {@code HebrewYear} object
 	 * using the current year  (see {@link #getThisYear()}). */
-	public HYear()
+	public HebrewYear()
 	{
 		this(getThisYear());
 	}
 
-	/** Create an {@code HYear} object.  The argument is validated as by
+	/** Create an {@code HebrewYear} object.  The argument is validated as by
 	 * {@link #setYear(int)}.
 	 * @param yr the year (from creation) to set the value to. */
-	public HYear(int yr)
+	public HebrewYear(int yr)
 	{
 		if (yr < 1 || yr > 6000)
 			yr = getThisYear();
@@ -64,7 +64,7 @@ public class HYear {
 		return false;
 	}
 
-	/** Return true if this {@code HYear} object represents a leap year, false
+	/** Return true if this {@code HebrewYear} object represents a leap year, false
 	 * otherwise.
 	 * @see #isLeap(int) */
 	public boolean isLeap()
@@ -84,7 +84,7 @@ public class HYear {
 		setYearType();
 	}
 
-	/** Get the year represented by this {@code HYear} object. */
+	/** Get the year represented by this {@code HebrewYear} object. */
 	public int getYear()
 	{
 		return year;
