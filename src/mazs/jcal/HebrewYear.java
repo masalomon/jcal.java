@@ -1,5 +1,7 @@
 package mazs.jcal;
 
+import static mazs.jcal.HebrewYear.YearType.*;
+
 /** A {@code HebrewYear} holds information about a year in the Jewish calendar.  All
  * calculations are as described in the Rambam's Ya"d Hachazaka (Mishne Torah), Sefer
  * III - Zmanim, Hilchos Kiddush Hachodesh, Chapters 6 to 8 (referenced herein as HKH).
@@ -16,7 +18,7 @@ public class HebrewYear {
 	private int roshHashana;
 	/** The type of year of this year: one of {@link #CHASER}, {@link #KSEDER}, {@link
 	 * #SHALEM}, or {@link INVALID}. */
-	private int yearType;
+	private YearType yearType;
 
 
 	/** Create a new {@code HebrewYear} describing the current year.  The current year is
@@ -125,15 +127,15 @@ public class HebrewYear {
 		return roshHashana;
 	}
 
-	/** Get the {@link #yearType type} of year of this {@code HebrewYear}. */
-	public int getYearType() {
+	/** Get the {@link YearType type} of year of this {@code HebrewYear}. */
+	public YearType getYearType() {
 		return yearType;
 	}
 
 	/** Calculate the day of the week on which Rosh Hashana (the first day of the year)
 	 * falls for a given year.  The day of the week depends on the day and time of the
 	 * {@link Molad} as well as whether this year, or the previous one, is a leap year.
-	 * To calculate the year type (see {@link #yearType}, we need to determine Rosh
+	 * To calculate the year type (see {@link YearType}, we need to determine Rosh
 	 * Hashana of both this year and the next, so this method is static to avoid infinite
 	 * recursion.
 	 * @see "Rambam: Ya"D HaChazaka, Zmanim, Hilchos Kiddush HaChodesh, Chapters 6-8"
@@ -164,15 +166,15 @@ public class HebrewYear {
 		return roshHashana;
 	}
 
-	/** Calculate the {@link #yearType type} of a given year - {@link HebrewYear#KSEDER KSEDER}
-	 * (regular), {@link HebrewYear#SHALEM SHALEM} (full), or {@link HebrewYear#CHASER CHASER}
-	 * (deficient) - based on the first and last days of the year (the first day of the next
-	 * year), as well as whether it is a leap year.
+	/** Calculate the {@link YearType year type} of a given year - {@link YearType#KSEDER
+	 * KSEDER} (regular), {@link YearType#SHALEM SHALEM} (full), or {@link YearType#CHASER
+	 * CHASER} (deficient) - based on the first and last days of the year (the first day
+	 * of the next year), as well as whether it is a leap year.
 	 * @param first the day of the week on which Rosh Hashana falls this year
 	 * @param next the day of the week on which Rosh Hashana falls <i>next</i> year
 	 * @param isLeap whether or not this year is a leap year */
-	private static int calculateYearType(int first, int next, boolean isLeap) {
-		int yearType = INVALID;
+	private static YearType calculateYearType(int first, int next, boolean isLeap) {
+		YearType yearType = INVALID;
 		switch (first) {			// On which day of the week is Rosh Hashana of this year?
 		case 2:						// On a Monday: 2..5-0-2 (R/L: C, S)
 			if (next == 5 && !isLeap)
@@ -210,10 +212,29 @@ public class HebrewYear {
 	}
 
 
-	/** A valid year type.  This value can be added to the length of a standard
-	 * year (354 days, or 384 in a leap years) to find the length of this year.
-	 * {@code CHASER} ("lacking") is 1 day shorter, {@code KSEDER} ("normal")
-	 * is standard, and {@code SHALEM} ("full") is 1 day longer. */
-	public static final int
-		CHASER = -1, KSEDER = 0, SHALEM = 1, INVALID = -354;
+	/** The type of year determines the number of days in the year, particularly the
+	 * number of days in the months of Cheshvan and Kisleiv. */
+	public enum YearType {
+		/** A {@code CHASER} ("lacking" or deficient) year is one day shorter than a
+		 * normal {@link #KSEDER} year.  The month of Kisleiv has only 29 days instead of
+		 * the usual 30. */
+		CHASER(-1),
+		/** A {@code KSEDER} ("normal" or regular) year is one in which the number of days
+		 * per month alternate regularly.  Cheshvan has 29 days, and Kisleiv has 30. */
+		KSEDER(0),
+		/** A {@code SHALEM} ("full") year is one day longer than a normal {@link #KSEDER}
+		 * year.  The month of Cheshvan has 30 days instead of only the usual 29. */
+		SHALEM(1),
+		/** A placeholder for invalid year input, or a {@link HebrewYear} whose
+		 * {@link YearType} has not yet been calculated. */
+		INVALID(-354);
+		/** The difference in year length between this year type and that of a regular
+		 * ({@link #KSEDER}) year.  This value can be added to the length of a regular
+		 * year (354 days, or 384 if it is a leap year) to find the number of days in
+		 * this year. */
+		final int difference;
+		YearType(int difference) {
+			this.difference = difference;
+		}
+	}
 }

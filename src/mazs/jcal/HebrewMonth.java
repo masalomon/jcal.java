@@ -1,5 +1,8 @@
 package mazs.jcal;
 
+import mazs.jcal.HebrewYear.YearType;
+import static mazs.jcal.HebrewMonth.HebrewMonths.*;
+
 /** A {@code HebrewMonth} represents a month (of a specific year) in the Jewish calendar.
  * All calculations are as described in the Rambam's Ya"d Hachazaka (Mishne Torah), Sefer
  * III - Zmanim, Hilchos Kiddush Hachodesh, Chapters 6 to 8 (referenced herein as HKH).
@@ -28,8 +31,10 @@ package mazs.jcal;
  */
 public class HebrewMonth {
 	/** The number of the month - an integer between TISHREI and ELUL. For
-	 *	a leap year, Adar Rishon is 6, Adar Sheini is 13. This means we must
-	 *	play around some to keep things straight. */
+	 * a leap year, Adar Rishon is 6, Adar Sheini is 13. This means we must
+	 * play around some to keep things straight.
+	 * @deprecated use {@link #getMonth()}.{@link HebrewMonths#number number} or
+	 * {@link #getSequentializedMonthNumber()} instead */
 	private int monthNum;
 
 	/** A {@link HebrewYear} representing the year of which this month is a part,
@@ -48,6 +53,9 @@ public class HebrewMonth {
 
 	/** The name of the month */
 	String name;
+
+	/** The {everything} about this {@code HebrewMonth}. */
+	private HebrewMonths month;
 
 	/** A constant for month lengths.  A month that is {@code CHASER} has 29 days, and a
 	 * month that is {@code MALEI} has 30 days. */
@@ -71,35 +79,81 @@ public class HebrewMonth {
 	/** Create a {@code HebrewMonth} with a pre-existing {@link HebrewYear} and a specific
 	 * month.  The month should be one of the constant month names.  It is validated as if
 	 * by {@link #setMonth(int)}. */
-	public HebrewMonth(HebrewYear year, int month) {
+	public HebrewMonth(HebrewYear year, int monthNum) {
+		this.year = year;
+		int normalizedMonth = getNormalizedMonthNumber(monthNum);
+		setMonth(normalizedMonth, false);
+	}
+
+	/** Create a {@link HebrewMonth} for a specific {@link HebrewYear} and
+	 * {@link HebrewMonths}.
+	 * @param year a {@link HebrewYear} representing the desired year
+	 * @param month the requested {@link HebrewMonths month}
+	 * @throws ArrayIndexOutOfBoundsException if the given year does not contain the
+	 * specified leap month (Adar II), i.e. it is not a leap year */
+	public HebrewMonth(HebrewYear year, HebrewMonths month) {
 		this.year = year;
 		setMonth(month);
 	}
 
 	/** Get the value of the current month.  This will be equal to one of the
-	 * constant month names. */
-	public int getMonth() {
-		return monthNum;
+	 * constant month values. */
+	public HebrewMonths getMonth() {
+		return month;
 	}
 
-	/** Set the value of the current month.  This value should be one of the constant
-	 * month names.  It is validated to ensure it is in the proper range (1 - 12, or 1 -
-	 * 13 for leap years). */
+	/** Set the value of the current month, by (normalized) month number.  The month
+	 * is loosely validated, so all Adars become Adar in a non-leap year, and Adar
+	 * becomes Adar I in a leap year.  Out of range month numbers become Tishrei. */
 	public void setMonth(int monthNum) {
+		if (monthNum >= TISHREI.number && monthNum < HebrewMonths.values().length)
+			setMonth(monthNum, false);
+		else
+			setMonth(TISHREI);
+	}
+
+	/** Set the value of the current month, by month number.  Validation can be strict or
+	 * loose.  For loose validation, all values for Adar (Adar, Adar I, and Adar II)
+	 * become Adar in a non-leap year, and Adar becomes Adar I in a leap year.  For
+	 * strict validation, specifying Adar I or Adar II in a non-leap year generates an
+	 * exception.
+	 * @param monthNum the number of the requested month.  This must match the ordinal of
+	 * one of the {@link HebrewMonths}.
+	 * @param strict specify whether validation should be strict or loose
+	 * @throws ArrayIndexOutOfBoundsException if the month is not a valid month number, or
+	 * is not valid for the current year and strict validation was requested
+	 */
+	public void setMonth(int monthNum, boolean strict) {
+		if (!strict || year == null) {
+			setMonth(HebrewMonths.valueOf(monthNum));
+		} else {
+			setMonth(HebrewMonths.valueOf(monthNum, year.isLeap()));
+		}
+	}
+
+	/** Set the value of the current month.  This value should be one of the enumerated
+	 * constant month values.  (See {@link HebrewMonths}.)  It is validated to ensure it
+	 * is in the proper range (Tishrei to Elul, and Adar II in a leap year only). */
+	public void setMonth(HebrewMonths month) {
 		if (year == null)
 			year = new HebrewYear();
-		if (monthNum >= TISHREI && monthNum <= ELUL ||
-				year.isLeap() && monthNum == ADAR_II)
-			this.monthNum = monthNum;
-		else
-			this.monthNum = monthNum = TISHREI;
+		if (!year.isLeap() && (month == ADAR_I || month == ADAR_II))
+			month = ADAR;
+		else if (year.isLeap() && month == ADAR)	// Assume asking for Month #6, which
+			month = ADAR_I;							//	is the first Adar (Adar I).
+		this.month = month;
 
 		this.molad = year.getMolad();
 		setMolad();
 		setRoshChodesh();
 		setMonthLength();
-		name = (year.isLeap() ? Molad.leap_months : Molad.reg_months)
-			[monthNum - 1];
+		name = (year.isLeap() ? Molad.leap_months : Molad.reg_months)[month.number - 1];
+		/* Assert */
+		if (this.name != month.monthName) {
+			System.err.printf("Assertion FAILED: %s != %s. (Equality check: %B.)%n",
+					this.name, this.month.monthName, this.name.equals(month.monthName));
+			assert this.name == month.monthName;
+		}
 	}
 
 	/** Get the day of the week upon which the month begins.  When Rosh Chodesh
@@ -124,10 +178,10 @@ public class HebrewMonth {
 	 * @return the normalized month number of the given sequentialized month
 	 * @deprecated I can't figure out a good interface. */
 	protected int getNormalizedMonthNumber(int monthNumber) {
-		if (!year.isLeap() || monthNumber <= ADAR_I)
+		if (!year.isLeap() || monthNumber <= ADAR_I.number)
 			return monthNumber;				// Before Adar, month numbers are the same.
-		else if (monthNumber == NISSAN)
-			return ADAR_II;					// Correct Adar Sheini to 13.
+		else if (monthNumber == NISSAN.number)
+			return ADAR_II.number;			// Correct Adar Sheini to 13.
 		else								// Adjust Nissan to Elul.
 			return monthNumber - 1;
 	}
@@ -138,16 +192,16 @@ public class HebrewMonth {
 	 * year.  The internal month number is unchanged.
 	 * @return the sequentialized number of the month */
 	protected int getSequentializedMonthNumber() {
-		if (!year.isLeap() || monthNum <= ADAR_I)
-			return monthNum;					// Before Adar, months are always the same
-		else if (monthNum < ADAR_II)
-			return monthNum + 1;				// From Nissan to Elul, adjust month by 1.
-		else									// Month is Adar Sheini
-			return NISSAN;						// Adar II takes the place of Nissan (7).
+		if (!year.isLeap() || month.number <= ADAR_I.number)
+			return month.number;			// Before Adar, month numbers are the same.
+		else if (month.number < ADAR_II.number)
+			return month.number + 1;		// From Nissan to Elul, adjust month by 1.
+		else								// Month is Adar Sheini
+			return NISSAN.number;			// Adar II takes the place of Nissan (7).
 	}
 
 	/** Calculate the molad for this month, based on Tishrei's molad. */
-	public void setMolad() {
+	private /* public */ void setMolad() {
 		int curMonth = getSequentializedMonthNumber();
 		for (int i = 1; i < curMonth; i++)		// Don't add for Tishrei
 			molad.add(Molad.nosar);
@@ -162,28 +216,29 @@ public class HebrewMonth {
 	/** Calculate which day the first of the month falls. */
 	private void setRoshChodesh() {
 		int day = year.getRoshHashana();
-		switch (monthNum) {		// Fall through, adding more for each month
-			case ELUL:		day += 2;	// Av is 30 days (4 weeks + 2 days)
-			case AV:		day += 1;	// Tammuz is 29 (4 weeks + 1 day)
-			case TAMMUZ:	day += 2;	// Sivan is 30
-			case SIVAN:		day += 1;	// Iyar is 29
-			case IYAR:		day += 2;	// Nissan is 30
-			case NISSAN:				// Adar II adds as many days as Nissan
-			case ADAR_II:	day += 1;	// Adar (II) is 29
-			case ADAR:		day += 2;	// Shevat is 30
-			case SHEVAT:	day += 1;	// Teveis is 29
-			case TEVEIS:	day += 2;	// Kisleiv is 30 (sometimes 29)
-			case KISLEIV:	day += 1;	// Cheshvan is 29 (sometimes 30)
-			case CHESHVAN:	day += 2;	// Tishrei is 30 days
+		switch (month) {		// Fall through, adding more for each month
+			case ELUL:		day += 2;	// Av has 30 days (4 weeks + 2 days)
+			case AV:		day += 1;	// Tammuz has 29 days (4 weeks + 1 day)
+			case TAMMUZ:	day += 2;	// Sivan has 30 days
+			case SIVAN:		day += 1;	// Iyar has 29 days
+			case IYAR:		day += 2;	// Nissan has 30 days
+			case NISSAN:	day += 1;	// Adar (II) has 29 days
+			case ADAR_I:		// Adar I and Adar II add as many days as Adar (Adar stam).
+			case ADAR_II:		// Adar II is accounted for below.
+			case ADAR:		day += 2;	// Shevat has 30 days
+			case SHEVAT:	day += 1;	// Teveis has 29 days
+			case TEVEIS:	day += 2;	// Kisleiv has 30 days (sometimes 29)
+			case KISLEIV:	day += 1;	// Cheshvan has 29 days (sometimes 30)
+			case CHESHVAN:	day += 2;	// Tishrei has 30 days
 			case TISHREI:	day += 0;	// Don't add anything, start of year
 		}
 		// For extra month: Adar I is 30 days (Adar II gets advanced, too)
-		if (year.isLeap() && monthNum >= NISSAN)
+		if (year.isLeap() && month.number >= NISSAN.number)
 			day += 2;
 		// Adjust for year type: Cheshvan is 30 or Kisleiv is 29
-		if (year.getYearType() == HebrewYear.SHALEM && monthNum > CHESHVAN)
+		if (year.getYearType() == YearType.SHALEM && month.number > CHESHVAN.number)
 			day++;
-		else if (year.getYearType() == HebrewYear.CHASER && monthNum > KISLEIV)
+		else if (year.getYearType() == YearType.CHASER && month.number > KISLEIV.number)
 			day--;
 
 		roshChodesh = day % Molad.DAYS;
@@ -192,19 +247,19 @@ public class HebrewMonth {
 	/** Calculate the length of the month.  Depends on year type. */
 	private void setMonthLength() {
 		// Months of Tishrei, Kisleiv, Shevat, Nissan, Sivan, Av
-		if (monthNum % 2 != 0)
+		if (month.number % 2 != 0)
 			length = MALEI;
 		else	// Months of Cheshvan, Teveis, Adar, Iyar, Tammuz, Elul
 			length = CHASER;
 		// Exceptions: a) Adar I is 30, Adar II is 29
 		if (year.isLeap()) {
-			if (monthNum == ADAR_I) length = MALEI;
-			else if (monthNum == ADAR_II) length = CHASER;
+			if (month == ADAR_I) length = MALEI;
+			else if (month == ADAR_II) length = CHASER;
 		}
 		// b) Cheshvan and Kisleiv depend on the year type (1 more or 1 less)
-		if (monthNum == CHESHVAN && year.getYearType() == HebrewYear.SHALEM)
+		if (month == CHESHVAN && year.getYearType() == YearType.SHALEM)
 			length = MALEI;
-		if (monthNum == KISLEIV && year.getYearType() == HebrewYear.CHASER)
+		if (month == KISLEIV && year.getYearType() == YearType.CHASER)
 			length = CHASER;
 	}
 
@@ -237,10 +292,36 @@ public class HebrewMonth {
 		System.out.println();
 	}
 
-	/** A constant for the name of the month.  Value is 1-based, starting at
-	 * {@code Tishrei = 1}.  Adar Sheini as a value of 13. */
-	public static final int
-		TISHREI = 1, CHESHVAN = 2, KISLEIV = 3, TEVEIS = 4, SHEVAT = 5,
-		ADAR = 6, NISSAN = 7, IYAR = 8, SIVAN = 9, TAMMUZ = 10, AV = 11,
-		ELUL = 12, ADAR_II = 13, ADAR_I = 6;
+
+	/** Constants for the names and numbers of the months.  The month numbers are 1-based,
+	 * starting at {@link #Tishrei} {@code = 1}.  {@link #ADAR_II Adar Sheini} has a value
+	 * of {@code 13}. */
+	public enum HebrewMonths {
+		TISHREI(1, "Tishrei"), CHESHVAN(2, "Marcheshvan"), KISLEIV(3, "Kisleiv"),
+		TEVEIS(4, "Teveis"), SHEVAT(5, "Shevat"), ADAR(6, "Adar"), NISSAN(7, "Nissan"),
+		IYAR(8, "Iyar"), SIVAN(9, "Sivan"), TAMMUZ(10, "Tammuz"), AV(11, "Av"),
+		ELUL(12, "Elul"), ADAR_II(13, "Adar Sheini"), ADAR_I(6, "Adar Rishon");
+		/** The (normalized) ordinal of each month.  <i>Normalized</i> means that the
+		 * ordinal of each month is the same for leap and non-leap years, with Adar II
+		 * tacked on to the end (13), out of sequence. */
+		final int number;
+		/** The proper name of the month, with Artscroll-style spelling. */
+		final String monthName;
+		HebrewMonths(int number, String monthName) {
+			this.number = number;
+			this.monthName = monthName;
+		}
+
+		static HebrewMonths valueOf(int monthNumber) {
+			return values()[monthNumber - 1];
+		}
+
+		static HebrewMonths valueOf(int monthNumber, boolean isLeap) {
+			if (isLeap && monthNumber == 6)
+				return ADAR_I;
+			if (!isLeap && monthNumber == 13)
+				throw new ArrayIndexOutOfBoundsException("Regular years only have 12 months");
+			return values()[monthNumber - 1];
+		}
+	}
 }
