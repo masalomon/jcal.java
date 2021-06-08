@@ -1,88 +1,91 @@
 package mazs.jcal;
 
-/**  A {@code Molad} object represents an exact moment in time in the system
- * traditionally used by Halacha when calculating the New Moon, or <i>molad</i>
- * (birth).  In this system, a week is divided into 7 days, counted from
- * Sunday; a day is divided into 24 hours, beginning at nightfall; and an
- * hour is divided into 1080 chalakim (parts).  Each chelek is thus equal to
- * 3 1/3 seconds.  For many calculations, only the day of the week is relevant;
- * the actual number of days is not important.  For others, the actual number
- * of days is needed.  Thus, many operations have been duplicated, allowing for
- * both sorts of calculations.  Any {@code Molad} object can be normalized to
- * drop its week count.
- * <p>The New Moon, or <b>molad</b>, occurs at the moment when the Moon is in
- * conjunction - the Moon is directly between the Sun and the Earth. and no
- * part of the Moon's disc is visible.  (A solar eclipse may take place if all
- * three bodies are on the same plane as well.)  The next Jewish month begins,
- * ideally, when the new Moon first becomes visible, several hours later.  The
- * actual time difference between one molad and the next varies; for most
- * calculations, we approximate the time difference as 29 days, 12 hours, and
- * 793 chalakim (44 1/18 minutes).  In our notation, we would write this as
- * 29'12'793.
+/**  A {@code Molad} represents a moment in time, in the system traditionally used by
+ * Halacha when calculating the New Moon, or <i>molad</i> (lit. birth).  In this system,
+ * a week is divided into 7 days, counted from Sunday; a day is divided into 24 hours,
+ * beginning at nightfall; and an hour is divided into 1080 chalakim (parts).  (A chelek
+ * is equal to 3 1/3 seconds.)  For some calculations, only the day of the week is
+ * important, and days that add up to a whole week can be ignored.  For others, the actual
+ * number of days is significant.  Thus, many operations have been duplicated, allowing
+ * for both sorts of calculations.  Any {@code Molad} object can be normalized to drop its
+ * week count.
+ * <p>
+ * The New Moon, or <b>molad</b>, occurs at the moment when the Moon is in conjunction -
+ * the Moon is (directly) between the Sun and the Earth, and no part of the Moon's disc
+ * is visible.  (A solar eclipse may take place if all three celestial bodies are in the
+ * same plane as well.)  The new Jewish month begins, ideally, when the new Moon first
+ * becomes visible, several hours later.  The actual time difference between one molad and
+ * the next varies.  For most calculations, we approximate the time difference as 29 days,
+ * 12 hours, and 793 chalakim (44 1/18 minutes).  In our notation, we would write this as
+ * 29'12'793, or 29d 12h 793c.
  * @author Menachem A. Salomon
- * @see "Rambam - Ya"d Hachazaka" (Mishne Torah), Sefer III - Zmanim, Hilchos
- * Kiddush Hachodesh, Chapters 6 to 8
+ * @see "Rambam - Ya"d Hachazaka (Mishne Torah), Sefer III - Zmanim, Hilchos Kiddush
+ * Hachodesh (Laws of the New Moon), Chapters 6 to 8"
  */
 public class Molad {
 	/** Supply a stand-alone version, for testing */
 	public static void main(String argv[]) {
-		Molad nosar = new Molad(1, 12, 793);
-		nosar.print();
-		nosar.add(m_origin);
-		nosar.display();
+		Molad l_nosar = new Molad(1, 12, 793);
+		l_nosar.print();
+		l_nosar.add(bahered);
+		l_nosar.display();
 	}
 
-	/* Constants for ease of reading and use */
-	/** 7 - The number of days in a week. */
+	/** The number of days in a week - 7. */
 	static final int DAYS = 7;
-	/** 24 - The number of hours in a day. */
-	static final int HOURS = 24;		
-	/** 1080 - The number of chalakim in an hour. */
+	/** The number of hours in a day - 24. */
+	static final int HOURS = 24;
+	/** The number of chalakim (plural of chelek) in an hour - 1080. */
 	static final int CHELEKS = 1080;
 
-	/** The (hypothetical) molad of Tishrei, Year 1.  This molad did not really
-	 * occur. It is found by subracting the {@link #nosar} of 1 year from the
-	 * first actual molad, Tishrei of Year 2, which occurred on Friday, at the
-	 * beginning of the third hour of the day, or 6'14'00 in our notation.
-	 * Counting backwards, we arrive at 2'5'204 as the molad of Year 1. */
-	static final Molad m_origin = new Molad(2, 5, 204);
+	/** The (hypothetical) molad of Tishrei, Year 1.  This molad did not actually occur,
+	 * as it is (nearly) a year before Creation.  It is found by subtracting the
+	 * {@link #nosar} of 1 year from the first actual molad, Tishrei of Year 2, which
+	 * occurred on Friday, at the beginning of the third hour of the day (when Adam
+	 * Harishon was created), or 6'14'00 in our notation.  Counting backwards, we arrive
+	 * at 2'5'204 as the molad of Year 1, a.k.a. Molad BaHeRed. */
+	static final Molad bahered = new Molad(2, 5, 204);
 
-	/** The difference (not counting weeks) between one molad and the next.
-	 *	The actual time difference between molads is 29 days, 12 hours, 793
-	 *	cheleks. */
+	/** The <i>nosar</i> ("excess" - not counting weeks) of the (average) time difference
+	 * between one molad and the next.  The actual time difference between molads varies,
+	 * but the accepted average is 29 days, 12 hours, and 793 chalakim. */
 	static final Molad nosar = new Molad(1, 12, 793);
 
-	/** The <i>nosar<i> ("excess" - not counting weeks) between the beginning
-	 * of 1 year and the next.  A regular, non-leap year, has 12 months.  The
-	 * value given here is 12 times the monthly nosar (with the weeks dropped).
-	 * The real length of a year is 354 days, 8 hours, 876 cheleks.
-	 * @see #nosar*/
+	/** The <i>nosar</i> ("excess" - not counting weeks) of the time difference between
+	 * the molad at the beginning of a regular (non-leap) year and the molad at the
+	 * beginning of the following year.  A regular year has 12 months, so the nosar of a
+	 * year is 12 times the nosar of a single month, normalized by dropping the weeks.
+	 * The non-normalized length of the year is 354 days, 8 hours, and 876 chalakim.
+	 * @see #nosar */
 	static final Molad reg_year = new Molad(4, 8, 876);
 
-	/** The nosar of a leap year.  A leap year has 13 months. The value given
-	 * here is 13 times the monthly nosar (with the weeks dropped).  The real
-	 * length of a leap year is 384 days, 21 hours, 589 cheleks.
-	 * @see #reg_year The nosar of a regular year */
+	/** The <i>nosar</i> ("excess" - not counting weeks) of the time difference between
+	 * the molad at the beginning of a leap year and the molad at the beginning of the
+	 * following year.  A leap year has 13 months, so the nosar of a leap year is 13 times
+	 * the nosar of a single month, normalized by dropping the weeks.  The non-normalized
+	 * length of the (average) leap year is 384 days, 21 hours, and 589 chalakim.
+	 * @see #reg_year The <i>nosar</i> of a regular year */
 	static final Molad leap_year = new Molad(5, 21, 589);
-	
-	/** The nosar of a machzor.  A <i>machzor</i> is a 19 year cycle consisting
-	 * of 7 leap years and 12 non-leap years in a specific order.  The nosars
-	 * of these years resolve (after adjustment) to the nosar 2'16'595. */
+
+	/** The <i>nosar</i> of a <i>machzor</i>, the 19-year (Metonic) cycle consisting of 7
+	 * leap years and 12 regular (non-leap) years, in a specific order.  The nosars of
+	 * these 19 years add up to 2'16'595 after normalization.  (The actual number of days
+	 * is ~7000.) */
 	static final Molad machzor = new Molad(2, 16, 595);
 
 	/** The actual length of one month, without dropping weeks: 29'12'793. */
 	static final Molad m_chodesh = new Molad(29, 12, 793);
 
-	/** The actual length of one year, including weeks: 354'8'876. */
+	/** The actual length of one (regular) year, including weeks: 354'8'876. */
 	static final Molad m_year = new Molad(354, 8, 876);
 
-	/** The actual length of a leap year, including weeks: 384'21'589. */
+	/** The actual length of one leap year, including weeks: 384'21'589. */
 	static final Molad m_lyear = new Molad(384, 21, 589);
 
 	/** The names of each of the days of the week. */
 	public static final String weekdays[] = {
-		"Shabbos", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
-		"Friday"			// Shabbos is first because SHABBOS % DAYS = 0
+		// Shabbos is first because SHABBOS % DAYS = 0
+		"Shabbos", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"
 	} ;
 
 	/** The names of each of the months in a regular, non-leap year. */
@@ -95,116 +98,144 @@ public class Molad {
 	public static final String leap_months[] = {
 		"Tishrei", "Marcheshvan", "Kisleiv", "Teveis", "Shevat",
 		"Adar Rishon", "Nissan", "Iyar", "Sivan", "Tammuz", "Av", "Elul",
-		"Adar Sheini"					// indexed non-sequentially
+		// Note: Adar Sheini is indexed non-sequentially (out of place) here.
+		"Adar Sheini"
 	} ;
 
-	/* Members: day, hour, and chelek of the molad */
-	/** The day of the week: Shabbos is 0, Sunday - Friday are 1 - 6. */
-	int days;
-	/** The hour of the day: hours are 0 - 23, starting at nightfall. */
-	int hours;
-	/** The chalakim of the hour: values are 0 - 1079 */
-	int cheleks;
 
-	/* Constructors: no-arg, copy, or day, hour, chelek supplied */
-	/** Default constructor.  The {@code Molad} is initialized to Shkia on
-	 * Friday night (0'0'0). */
+	/** The day of the week on which this {@code Molad} occurs.  When normalized, this is
+	 * constrained to be between 0 and 6, with 0 representing Shabbos and 1 to 6
+	 * representing Sunday to Friday.  When not normalized, {@code days} can be any number
+	 * of days, including negative numbers. */
+	private int days;
+	/** The hour of the day when this {@code Molad} occurs.  This is generally constrained
+	 * to be between 0 and 23, representing hours of the day, counting from nightfall. */
+	private int hours;
+	/** The chalakim of the hour when this {@code Molad} occurs.  (<i>Chalakim</i> is the
+	 * Hebrew plural form of <i>chelek</i>.)  This is generally constrained to be between
+	 * 0 and 1079, with 1080 chalakim adding up to a full hour. */
+	private int cheleks;
+
+
+	/** Create a {@link Molad} initialized to a default value.  The {@code Molad} is
+	 * initialized to nightfall (Shkia, or sunset, 6 PM) on Friday evening (0'0'0). */
 	public Molad() {
-		days = hours = cheleks = 0;		// initialize to Shkia, Friday night
+		days = hours = cheleks = 0;					// Initialize to Shkia on Friday night.
 	}
 
-	/** Initialize {@code Molad} to day, hour, and chelek given.  Only minimal
-	 * checking is performed: if any argument is outside the acceptable range,
-	 * it is ignored and the corresponding field is set to 0. */
-	public Molad(int dy, int hr, int clk) {		/* TO-ADD: throws invalidArg */
-		if (dy >= 0 && dy < DAYS) days = dy;
-		if (hr >= 0 && hr < HOURS) hours = hr;
-		if (clk >= 0 && clk <= CHELEKS) cheleks = clk;
+	/** Create a {@link Molad} initialized with a given {@link #days day}, {@link #hours
+	 * hour}, and number of {@link #cheleks chalakim}.  Only minimal checking is
+	 * performed; if any argument falls outside the acceptable range, it is ignored, the
+	 * corresponding field being set to 0.
+	 * @throws IllegalArgumentException if any of the arguments are outside their
+	 * respective acceptable ranges */
+	public Molad(int day, int hour, int chelek) {
+		// TODO: throw IllegalArgumentException on values outside of range.
+		if (day >= 0 && day < DAYS)
+			days = day;
+		if (hour >= 0 && hour < HOURS)
+			hours = hour;
+		if (chelek >= 0 && chelek <= CHELEKS)
+			cheleks = chelek;
 	}
 
-	/** Copy constructor.  All fields are copied from the old {@code Molad}. */
+	/** Create a new {@link Molad} with the {@link #days}, {@link #hours}, and number of
+	 * {@link #cheleks chalakim} copied from another {@code Molad} object. */
 	public Molad(final Molad from) {
 		days = from.days;
 		hours = from.hours;
 		cheleks = from.cheleks;
 	}
 
+	/** Return the {@link #days}, either the day of the week or the number of days. */
+	public int getDays() {
+		return days;
+	}
 
-	/* Addition: 2 forms: plus() will allow counting weeks, add() will not.
-	 * Assume both Molads (this and argument) are valid. */
-	/** Add two {@code Molad} objects, without dropping the weeks.
+	/** Return the number of {@link #hours}. */
+	public int getHours() {
+		return hours;
+	}
+
+	/** Return the number of {@link #cheleks chalakim} (parts of an hour). */
+	public int getCheleks() {
+		return cheleks;
+	}
+
+	/* Arithmetic operations come in two forms: one that discards days that amount to
+	 * whole weeks, and another that retains them.  All operations assume that the Molad
+	 * objects are, on entry, valid. */
+
+	/** Add two {@link Molad} objects, retaining the days that amount to whole weeks.
 	 * @see #add(Molad) */
-	public void plus(Molad m) {
-		cheleks += m.cheleks;			// Add the chalakim from argument.
-		if (cheleks >= CHELEKS) {		// If we have 1080 chalakim, then ...
-			cheleks -= CHELEKS;			// ... exchange them for 1 hour.
+	public void plus(final Molad other) {
+		cheleks += other.cheleks;				// Add the chalakim from the other Molad.
+		if (cheleks >= CHELEKS) {				// If we have 1080 chalakim (a whole hour),
+			cheleks -= CHELEKS;					// ... then exchange them for an hour.
 			hours++;
 		}
-		hours += m.hours;				// Add the hours from argument.
-		if (hours >= HOURS) {			// If we have 24 hours, then ...
-			hours -= HOURS;				// ...exchange them for 1 day.
+		hours += other.hours;					// Add the hours from the other Molad.
+		if (hours >= HOURS) {					// If we have 24 hours (a whole day),
+			hours -= HOURS;						// ... then exchange them for a day.
 			days++;
 		}
-		days += m.days;					// Add the days from argument.  In this
-	}									// method, don't drop the weeks.
+		days += other.days;						// Add the days from the other Molad.
+								// Note: In this method, we don't drop the whole weeks.
+	}
 
-	/** Add two {@code Molad} objects, normalizing the result so the days do
-	 * not add up to a week.
+	/** Add two {@link Molad} objects, normalizing the result by dropping those days that
+	 * add up to a whole week.
 	 * @see #plus(Molad) */
-	public void add(Molad m) {
-		this.plus(m);					// First add normally.
-		if (days >= DAYS)				// Do the days add up to a full week?
-			days -= DAYS;				// Drop the weeks, keep only the days.
-		// adjustDays() - but doing it manually is simpler.
+	public void add(Molad other) {
+		this.plus(other);						// First add without normalizing.
+		if (days >= DAYS)						// Do the days add up to a full week?
+			days -= DAYS;						// Drop the weeks, keep only the days.
+		// Could use this.normalizeDays(), but doing it manually is simpler.
 	}
 
-	/* Multiplication: 2 forms, as above. Use mult() to multiply and drop
-	 *	the weeks, use times() to multiply and keep the weeks. */
-	/** Multiply a {@code Molad} object by an integer without normalizing the
-	 * days. 
-	 * @see #mult(int) */
+	/** Multiply a {@link Molad} by an integer without normalizing the days. 
+	 * @see #multiply(int) */
 	public void times(int factor) {
-		int clk = cheleks * factor;		// Multiply each field.
-		int hr = hours * factor;
-		int dy = days * factor;
+		int t_chalakim = cheleks * factor;			// Multiply each field by the factor.
+		int t_hours = hours * factor;
+		int t_days = days * factor;
 
-		if (clk > CHELEKS)				// If have more than 1080 cheleks ...
-			hr += (clk / CHELEKS);		// exchange each 1080 cheleks for 1 hr.
-		cheleks = (clk % CHELEKS);		// Remainder remain chalakim.
+		if (t_chalakim >= CHELEKS)					// If we have 1080 or more cheleks, ...
+			t_hours += (t_chalakim / CHELEKS);		// exchange each 1080 cheleks for 1 hour.
+		cheleks = (t_chalakim % CHELEKS);			// And the remainder remain chalakim.
 
-		if (hr >= HOURS)				// If have more than 24 hours ...
-			dy += (hr / HOURS);			// exchange each 24 hours for a day.
-		hours = (hr % HOURS);			// Remainder remain hours.
+		if (t_hours >= HOURS)						// If we have 24 or more hours, then ...
+			t_days += (t_hours / HOURS);			// ... exchange each 24 hours for 1 day.
+		hours = (t_hours % HOURS);					// And the remainder remain hours.
 
-		days = dy;						// Keep all days, don't drop the weeks.
+		days = t_days;							// Keep all days, don't drop the weeks.
 	}
 
-	/** Multiply a {@code Molad} by an integer, normalizing the result by
-	 * dropping the weeks.
+	/** Multiply a {@code Molad} by an integer, normalizing the result by dropping those
+	 * days that add up to whole weeks.
 	 * @see #times(int) */
-	public void mult(int factor) {
-		this.times(factor);				// Use times() to do the work.
-		this.adjustDays();				// Adjust so days < 7
-		//m.days = (dy % DAYS);
+	public void multiply(int factor) {
+		this.times(factor);					// Use times() to do most of the work.
+		this.normalizeDays();				// Normalize days so they are less than a week.
+		// Normalize days: this.days = this.days % DAYS
 	}
 
-	/** Adjust the molad, dropping the weeks so that days < 7. */
-	public void adjustDays() {
-		days %= DAYS;		// Only keep days that don't add to a full week.
+	/** Normalize the {@link Molad} by dropping the weeks, retaining only those days that
+	 * don't add up to a whole week.  {@link #days} is left in the range 0 to 6. */
+	public void normalizeDays() {
+		this.days %= DAYS;				// Only keep days that don't amount to a whole week.
 	}
 
-	/* Accessor methods for days, hours, and cheleks */
-	/** Get the days */		public int getDays()	{	return days;	}
-	/** Get the hours */	public int getHours()	{	return hours;	}
-	/** Get the cheleks */	public int getCheleks()	{	return cheleks;	}
-
-	/* Various printing methods: toString(), print(), display() */
-	/** Return String with format "x day(s), y hour(s), and z chelek(s)".
-	 *	If days, hours, or cheleks are 1, the plural 's' is not printed. */
+	/** Return a {@link String} representation of this {@link Molad}.  The string is of
+	 * the simple format, "x day(s), y hour(s), and z chelek(s)".  The plural 's' is
+	 * omitted for any field with a value of 1. */
+	@Override
 	public String toString() {
-		return days + " day" + (days == 1 ? "" : "s") + ", " +
-			hours + " hour" + (hours == 1 ? "" : "s") + ", and " +
-			cheleks + " chelek" + (cheleks == 1 ? "" : "s");
+		return new StringBuilder(35)
+				.append(days).append(" day").append(days == 1 ? "" : "s").append(", ")
+				.append(hours).append(" hour").append(hours == 1 ? "" : "s").append(", and ")
+				.append(cheleks).append(cheleks == 1 ? " chelek" : " chalakim")
+				.toString();
 	}
 
 	/** Print the value of the molad, in days, hours and cheleks. */
@@ -212,32 +243,34 @@ public class Molad {
 		System.out.println("Molad is " + this + ".");
 	}
 
-	/** Print the time of the molad in the modern format, with named day of
-	 *	the week and the time of day in an hour:minute format. */
+	/** Print the day and time of the {@link Molad} in the modern format, naming the day
+	 * of the week and displaying the time of day in an hour:minute format. */
 	 public void display() {
-		int min = cheleks / 18;		// 18 cheleks to a minute
-		int clk = cheleks % 18;		// Cheleks that don't add up to a minute
+		int minutes = cheleks / 18;				// There are 18 cheleks in a minute.
+		int chalakim = cheleks % 18;			// Cheleks that don't add up to a minute
 
-		int dy = days;				// Convert from hours past sunset (shkia)
-		int hr = hours - 6;			//	to hours past midnight.
-		if (hr < 0) {				// If hours went negative,
-			hr += HOURS;			//	change to hours past midnight ...
-			dy-= 1;					//	... of the previous day. But if
-			if (dy < 0)				//	today was Shabbos (0), then dy just
-				dy += DAYS;			//	became -1, so add 7 to change it to
-		}							//	Friday.
+		int day = days;							// Convert from hours past sunset (Shkia)
+		int hour = hours - 6;					//	to hours past midnight.
+		if (hour < 0) {							// If hours went negative, change to hours past
+			hour += HOURS;						//	midnight of the previous day.
+			day -= 1;
+			if (day < 0)						// If days went negative (i.e. today was Shabbos),
+				day += DAYS;					// ... then add 7 to correct it to Friday.
+		}
 
-		String s;
-		if (hr >= 18 && hr < HOURS)		s = " evening";
-		else if (hr >= 0 && hr < 6)		s = " predawn";
-		else if (hr >= 6 && hr < 12)	s = " morning";
-		else /* hr >= 12 && hr < 18 */	s = " afternoon";
+		// TODO in JDK 14: This is a good spot for a switch() expression.
+		String timeOfDay = hour >= 18 && hour < HOURS ?	"evening"
+				: hour >= 0 && hour < 6		?	"predawn"
+				: hour >= 6 && hour < 12	?	"morning"
+				: "afternoon";					// hour >= 12 && hour < 18
 
-//TODO: Have to get the names of the days, don't have it yet.
-		System.out.println("The molad is " + weekdays[dy] + s + ", " +
-			(hr % 12 != 0 ? hr % 12 : 12 ) + ":" +
-			((min < 10 ) ? "0" + min : min) + " " +
-			(hr < 12 ? "AM" : "PM") + " and " + clk +
-			(clk == 1 ? " chelek" : " chalakim") + ".");
+		// System.out.println("The molad is " + weekdays[day] + " " + timeOfDay + ", " +
+		//	(hour % 12 != 0 ? hour % 12 : 12 ) + ":" +
+		//	((minutes < 10 ) ? "0" + minutes : minutes) + " " +
+		//	(hour < 12 ? "AM" : "PM") + " and " + chalakim +
+		//	(chalakim == 1 ? " chelek" : " chalakim") + ".");
+		System.out.printf("The molad is %s %s, %d:%02d %s and %d %s.%n",
+				weekdays[day], timeOfDay, hour % 12 != 0 ? hour % 12 : 12, minutes,
+				hour < 12 ? "AM" : "PM", chalakim, chalakim == 1 ? "chelek" : "chalakim");
 	}
 }

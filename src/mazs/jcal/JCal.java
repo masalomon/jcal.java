@@ -1,19 +1,15 @@
 package mazs.jcal;
 
-/** This class contains the command line interface to the Hebrew calendar
- * program.  It is named in lowercase (contrary to convention) for ease of use.
+/** This class contains the command-line interface to the Hebrew calendar program.
  * @author Menachem A. Salomon
  * @see Molad
- * @see HebrewYear
- * @see HebrewMonth
- * @see CalendarFrame
+ * @see JCalendarFrame
  */
 public class JCal {
-
 	/** Run from the command line.
-	 * Synopsis: java jcal [options] <year> <month>
+	 * Synopsis: java {@link jcal} [options] {@code <year>} {@code <month>}
 	 * Options: [ none yet ] */
-	public static void main(String[] args) {
+	public static void main(String... args) {
 		// TO DO: Set options here.
 		if (args.length != 2) {
 			System.err.println(usage_str);
